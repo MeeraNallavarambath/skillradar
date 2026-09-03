@@ -37,7 +37,7 @@ def test_meets_both_conditions():
     )
 
 
-def test_meets_salary_but_skill():
+def test_high_salary_without_skill_is_not_relevant():
     assert (
         is_relevant(
             {
@@ -51,7 +51,7 @@ def test_meets_salary_but_skill():
     )
 
 
-def test_meets_skill_but_salary():
+def test_low_salary_with_skill_is_not_relevant():
     assert (
         is_relevant(
             {

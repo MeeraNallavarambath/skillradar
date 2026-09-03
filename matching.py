@@ -3,7 +3,7 @@ REQUIRED_SKILL = "python"
 
 
 def meets_salary(salary_min: int) -> bool:
-    """Returns True if the salary is atleast equal to MIN_SALARY"""
+    """Returns True if the salary is at least MIN_SALARY"""
     return salary_min >= MIN_SALARY
 
 
