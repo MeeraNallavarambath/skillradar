@@ -46,13 +46,14 @@ jobs = [
     },
 ]
 
-relevant_count = 0
+if __name__ == "__main__":
+    relevant_count = 0
 
-for job in jobs:
-    if is_relevant(job):
-        relevant_count += 1
-        print(f"{job['title']} at {job['company']} - RELEVANT")
-    else:
-        print(f"{job['title']} at {job['company']} - SKIP")
+    for job in jobs:
+        if is_relevant(job):
+            relevant_count += 1
+            print(f"{job['title']} at {job['company']} - RELEVANT")
+        else:
+            print(f"{job['title']} at {job['company']} - SKIP")
 
-print(f"{relevant_count} of {len(jobs)} postings relevant")
+    print(f"{relevant_count} of {len(jobs)} postings relevant")
