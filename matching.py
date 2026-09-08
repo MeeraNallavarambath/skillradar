@@ -1,3 +1,5 @@
+import json
+
 MIN_SALARY = 45000
 REQUIRED_SKILL = "python"
 
@@ -19,34 +21,14 @@ def is_relevant(job: dict) -> bool:
     )
 
 
-jobs = [
-    {
-        "title": "ML Engineer",
-        "company": "Fenergo",
-        "salary_min": 55000,
-        "description": "Strong Python and PyTorch experience required.",
-    },
-    {
-        "title": "Data Analyst",
-        "company": "Aon",
-        "salary_min": 38000,
-        "description": "Excel, SQL and Power BI.",
-    },
-    {
-        "title": "AI Engineer",
-        "company": "Stripe",
-        "salary_min": 70000,
-        "description": "Python, LLMs, RAG systems, AWS.",
-    },
-    {
-        "title": "Junior Developer",
-        "company": "Version 1",
-        "salary_min": 48000,
-        "description": "Java and Spring Boot.",
-    },
-]
+def load_jobs(path: str) -> list:
+    """Read job postings from a JSON file."""
+    with open(path) as f:
+        return json.load(f)
+
 
 if __name__ == "__main__":
+    jobs = load_jobs("jobs.json")
     relevant_count = 0
 
     for job in jobs:
