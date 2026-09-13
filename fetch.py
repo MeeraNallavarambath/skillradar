@@ -9,32 +9,22 @@ load_dotenv()
 APP_ID = os.getenv("ADZUNA_APP_ID")
 APP_KEY = os.getenv("ADZUNA_APP_KEY")
 
-print("APP ID loaded", APP_ID is not None)
-print("APP KEY loaded", APP_KEY is not None)
 
-url = "https://api.adzuna.com/v1/api/jobs/gb/search/1"
+def fetch_jobs(what: str, results_per_page: int = 50) -> list:
+    """Fetch job postings from the Adzuna API."""
+    url = "https://api.adzuna.com/v1/api/jobs/gb/search/1"
 
-params = {
-    "app_id": APP_ID,
-    "app_key": APP_KEY,
-    "what": "Machine Learning",
-    "results_per_page": 50,
-}
+    params = {
+        "app_id": APP_ID,
+        "app_key": APP_KEY,
+        "what": what,
+        "results_per_page": results_per_page,
+    }
 
-response = requests.get(url, params=params)
-print("Status code = ", response.status_code)
+    response = requests.get(url, params=params)
+    response.raise_for_status()
 
-data = response.json()
-
-print(type(data))
-print(data.keys())
-
-print("Total matching jobs:", data["count"])
-print("Mean salary:", data["mean"])
-print("Results returned:", len(data["results"]))
-
-
-print(json.dumps(data["results"][0], indent=2))
+    return response.json()["results"]
 
 
 def to_job_posting(raw: dict) -> dict:
@@ -52,19 +42,29 @@ def to_job_posting(raw: dict) -> dict:
     }
 
 
-for raw in data["results"]:
-    print(to_job_posting(raw))
+def deduplicate(jobs: list) -> list:
+    """Remove postings that repeat the same title and company."""
+    seen = set()
+    unique = []
 
-missing_salary = sum(1 for r in data["results"] if "salary_min" not in r)
-predicted_salary = sum(
-    1 for r in data["results"] if r.get("salary_is_predicted") == "1"
-)
+    for job in jobs:
+        key = (job["title"], job["company"])
 
-print(f"Missing salary: {missing_salary} of {len(data['results'])}")
-print(f"Predicted salary: {predicted_salary} of {len(data['results'])}")
+        if key not in seen:
+            seen.add(key)
+            unique.append(job)
+    return unique
+
 
 if __name__ == "__main__":
-    jobs = [to_job_posting(raw) for raw in data["results"]]
+    print("APP ID loaded", APP_ID is not None)
+    print("APP KEY loaded", APP_KEY is not None)
+
+    raw_jobs = fetch_jobs("machine learning python")
+    jobs = [to_job_posting(raw) for raw in raw_jobs]
+    jobs = deduplicate(jobs)
+
+    print(f"After deduplication: {len(jobs)}")
 
     with open("jobs.json", "w") as f:
         json.dump(jobs, f, indent=2)

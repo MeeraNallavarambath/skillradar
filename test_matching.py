@@ -1,3 +1,4 @@
+from fetch import deduplicate
 from matching import is_relevant, meets_salary, mentions_skill
 
 
@@ -63,3 +64,12 @@ def test_low_salary_with_skill_is_not_relevant():
         )
         is False
     )
+
+
+def test_deduplicate_removes_repeated_title_and_company():
+    jobs = [
+        {"title": "ML Engineer", "company": "Stripe", "source_id": "1"},
+        {"title": "ML Engineer", "company": "Stripe", "source_id": "2"},
+        {"title": "Data Scientist", "company": "Stripe", "source_id": "3"},
+    ]
+    assert len(deduplicate(jobs)) == 2
